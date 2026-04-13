@@ -307,3 +307,145 @@ canvas#tetris {
         min-width: 100px;
     }
 }
+.gameboy-controls {
+    display: none;
+    width: min(100%, 340px);
+    margin-top: 18px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.dpad {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+.dpad-btn {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 10px;
+    background: #2f2f35;
+    color: #d8ffd0;
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow:
+        inset -2px -2px 0 rgba(255,255,255,0.08),
+        inset 2px 2px 0 rgba(0,0,0,0.4),
+        0 4px 10px rgba(0,0,0,0.35);
+    text-transform: none;
+    min-width: 0;
+    padding: 0;
+}
+
+.dpad-btn:active {
+    transform: translateY(2px);
+    background: #242428;
+}
+
+.dpad-up {
+    top: 0;
+    left: 51px;
+}
+
+.dpad-left {
+    top: 51px;
+    left: 0;
+}
+
+.dpad-center {
+    top: 51px;
+    left: 51px;
+    background: #1e1e22;
+    color: #7b7b7b;
+    cursor: default;
+}
+
+.dpad-right {
+    top: 51px;
+    right: 0;
+}
+
+.dpad-down {
+    bottom: 0;
+    left: 51px;
+}
+
+.ab-buttons {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    transform: rotate(-18deg);
+}
+
+.ab-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: none;
+    min-width: 0;
+    padding: 0;
+    font-size: 22px;
+    font-weight: bold;
+    color: #fff;
+    box-shadow:
+        inset -3px -3px 0 rgba(255,255,255,0.12),
+        inset 3px 3px 0 rgba(0,0,0,0.35),
+        0 6px 14px rgba(0,0,0,0.35);
+    text-transform: none;
+}
+
+.btn-a {
+    background: #8b1e5a;
+}
+
+.btn-b {
+    background: #6d1547;
+}
+
+.ab-btn:active {
+    transform: translateY(2px);
+}
+
+@media (max-width: 768px) {
+    .mobile-controls.gameboy-controls {
+        display: flex;
+    }
+
+    .mobile-controls:not(.gameboy-controls) {
+        display: none;
+    }
+}
+
+@media (max-width: 420px) {
+    .gameboy-controls {
+        width: 100%;
+        gap: 12px;
+    }
+
+    .dpad {
+        width: 132px;
+        height: 132px;
+    }
+
+    .dpad-btn {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+    }
+
+    .dpad-up { top: 0; left: 45px; }
+    .dpad-left { top: 45px; left: 0; }
+    .dpad-center { top: 45px; left: 45px; }
+    .dpad-right { top: 45px; right: 0; }
+    .dpad-down { bottom: 0; left: 45px; }
+
+    .ab-btn {
+        width: 56px;
+        height: 56px;
+        font-size: 20px;
+    }
+}
