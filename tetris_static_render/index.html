@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Tetris</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="game-card">
+            <div class="left-panel">
+                <h1>NEON TETRIS</h1>
+                <p class="subtitle">Retro arcade edition</p>
+
+                <div class="info-box">
+                    <div class="info-row">
+                        <span>Score</span>
+                        <strong id="score">0</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Lines</span>
+                        <strong id="lines">0</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Level</span>
+                        <strong id="level">1</strong>
+                    </div>
+                </div>
+
+                <div class="next-box">
+                    <h2>Next</h2>
+                    <canvas id="nextPiece" width="120" height="120"></canvas>
+                </div>
+
+                <div class="controls-box">
+                    <h2>Controls</h2>
+                    <p>Desktop: A/D/S/W or Arrow Keys</p>
+                    <p>Mobile: Use the touch buttons below</p>
+                    <p>Tap Start to play</p>
+                </div>
+
+                <div class="button-group">
+                    <button id="startBtn">Start Game</button>
+                    <button id="restartBtn">Restart</button>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <canvas id="tetris"></canvas>
+                <div id="gameOverText" class="game-over hidden">GAME OVER</div>
+
+                <div class="mobile-controls">
+                    <div class="mobile-row">
+                        <button class="control-btn" id="rotateBtn">Rotate</button>
+                        <button class="control-btn" id="dropBtn">Drop</button>
+                    </div>
+                    <div class="mobile-row">
+                        <button class="control-btn" id="leftBtn">◀</button>
+                        <button class="control-btn" id="downBtn">▼</button>
+                        <button class="control-btn" id="rightBtn">▶</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
