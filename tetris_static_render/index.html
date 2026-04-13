@@ -3,87 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Boy Tetris</title>
+    <title>Mobile Tetris</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-shell">
-        <div class="screen-bezel">
-            <div class="top-bar">
-                <span class="power-dot"></span>
-                <span class="brand">DOT MATRIX WITH STEREO SOUND</span>
+    <div class="app-shell">
+
+        <!-- TITLE SCREEN -->
+        <section id="titleScreen" class="screen active">
+            <div class="menu-card">
+                <h1>MOBILE TETRIS</h1>
+                <p class="menu-subtitle">Pick an option</p>
+
+                <div class="menu-buttons">
+                    <button id="playMenuBtn" class="menu-btn">Play</button>
+                    <button id="leaderboardMenuBtn" class="menu-btn secondary-btn">Leaderboard</button>
+                </div>
             </div>
+        </section>
 
-            <div class="game-wrapper">
-                <div class="game-card">
-                    <div class="left-panel">
-                        <h1>GAME BOY TETRIS</h1>
-                        <p class="subtitle">Mobile + Desktop</p>
-
-                        <div class="info-box">
-                            <div class="info-row">
-                                <span>Score</span>
-                                <strong id="score">0</strong>
-                            </div>
-                            <div class="info-row">
-                                <span>Lines</span>
-                                <strong id="lines">0</strong>
-                            </div>
-                            <div class="info-row">
-                                <span>Level</span>
-                                <strong id="level">1</strong>
-                            </div>
+        <!-- GAME SCREEN -->
+        <section id="gameScreen" class="screen">
+            <div class="game-layout">
+                <div class="top-row">
+                    <div class="mini-stats">
+                        <div class="stat-box">
+                            <span>Score</span>
+                            <strong id="score">0</strong>
                         </div>
-
-                        <div class="next-box">
-                            <h2>Next</h2>
-                            <canvas id="nextPiece" width="120" height="120"></canvas>
+                        <div class="stat-box">
+                            <span>Lines</span>
+                            <strong id="lines">0</strong>
                         </div>
-
-                        <div class="controls-box desktop-controls">
-                            <h2>Controls</h2>
-                            <p>A / ← : Left</p>
-                            <p>D / → : Right</p>
-                            <p>S / ↓ : Down</p>
-                            <p>W / ↑ : Rotate</p>
-                            <p>Space : Hard Drop</p>
-                        </div>
-
-                        <div class="button-group">
-                            <button id="startBtn">Start Game</button>
-                            <button id="restartBtn">Restart</button>
+                        <div class="stat-box">
+                            <span>Level</span>
+                            <strong id="level">1</strong>
                         </div>
                     </div>
 
-                    <div class="right-panel">
-                        <canvas id="tetris"></canvas>
-                        <div id="gameOverText" class="game-over hidden">GAME OVER</div>
+                    <div class="next-mini-box">
+                        <span class="next-label">Next</span>
+                        <canvas id="nextPiece" width="80" height="80"></canvas>
                     </div>
+                </div>
+
+                <div class="board-wrap">
+                    <canvas id="tetris"></canvas>
+                    <div id="gameOverText" class="game-over hidden">GAME OVER</div>
+                </div>
+
+                <div class="mobile-controls">
+                    <div class="dpad">
+                        <button class="dpad-btn dpad-up" id="rotateBtn">▲</button>
+                        <button class="dpad-btn dpad-left" id="leftBtn">◀</button>
+                        <button class="dpad-btn dpad-center" disabled>•</button>
+                        <button class="dpad-btn dpad-right" id="rightBtn">▶</button>
+                        <button class="dpad-btn dpad-down" id="downBtn">▼</button>
+                    </div>
+
+                    <div class="right-controls">
+                        <div class="ab-buttons">
+                            <button class="ab-btn btn-b" id="dropBtn">B</button>
+                            <button class="ab-btn btn-a" id="aBtn">A</button>
+                        </div>
+
+                        <div class="small-action-row">
+                            <button class="small-btn" id="menuBtn">Menu</button>
+                            <button class="small-btn" id="restartBtn">Restart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEADERBOARD SCREEN -->
+        <section id="leaderboardScreen" class="screen">
+            <div class="menu-card">
+                <h1>LEADERBOARD</h1>
+                <p class="menu-subtitle">Top local scores on this device</p>
+
+                <div id="leaderboardList" class="leaderboard-list"></div>
+
+                <div class="menu-buttons">
+                    <button id="backToMenuBtn" class="menu-btn">Back</button>
+                    <button id="clearLeaderboardBtn" class="menu-btn danger-btn">Clear</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SAVE SCORE MODAL -->
+        <div id="saveScoreModal" class="modal hidden">
+            <div class="modal-card">
+                <h2>Save Score</h2>
+                <p>Your score: <strong id="finalScoreText">0</strong></p>
+                <input type="text" id="playerNameInput" placeholder="Enter your name" maxlength="15">
+                <div class="modal-actions">
+                    <button id="saveScoreBtn" class="menu-btn">Save</button>
+                    <button id="skipScoreBtn" class="menu-btn secondary-btn">Skip</button>
                 </div>
             </div>
         </div>
 
-        <div class="mobile-controls gameboy-controls">
-            <div class="dpad">
-                <button class="dpad-btn dpad-up" id="rotateBtn">▲</button>
-                <button class="dpad-btn dpad-left" id="leftBtn">◀</button>
-                <button class="dpad-btn dpad-center" disabled>•</button>
-                <button class="dpad-btn dpad-right" id="rightBtn">▶</button>
-                <button class="dpad-btn dpad-down" id="downBtn">▼</button>
-            </div>
-
-            <div class="ab-side">
-                <div class="ab-buttons">
-                    <button class="ab-btn btn-b" id="dropBtn">B</button>
-                    <button class="ab-btn btn-a" id="aBtn">A</button>
-                </div>
-
-                <div class="start-select">
-                    <button class="small-btn" id="startBtnMobile">START</button>
-                    <button class="small-btn" id="restartBtnMobile">SELECT</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script src="script.js"></script>
