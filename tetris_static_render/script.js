@@ -16,6 +16,9 @@ const rightBtn = document.getElementById("rightBtn");
 const downBtn = document.getElementById("downBtn");
 const rotateBtn = document.getElementById("rotateBtn");
 const dropBtn = document.getElementById("dropBtn");
+const aBtn = document.getElementById("aBtn");
+const startBtnMobile = document.getElementById("startBtnMobile");
+const restartBtnMobile = document.getElementById("restartBtnMobile");
 
 const COLS = 10;
 const ROWS = 20;
@@ -26,13 +29,13 @@ canvas.height = ROWS * BLOCK_SIZE;
 
 const COLORS = [
     null,
-    "#00f7ff",
-    "#ffe600",
-    "#9d4dff",
-    "#39ff14",
-    "#ff3131",
-    "#2d7cff",
-    "#ff9f1c"
+    "#0f380f",
+    "#306230",
+    "#8bac0f",
+    "#9bbc0f",
+    "#1f4f1f",
+    "#567d46",
+    "#2f5f2f"
 ];
 
 const SHAPES = [
@@ -70,7 +73,7 @@ let lines = 0;
 let level = 1;
 let nextMatrix = null;
 
-let dropInterval = 400;
+let dropInterval = 500;
 let dropCounter = 0;
 let lastTime = 0;
 let animationId = null;
@@ -117,16 +120,12 @@ function drawCell(x, y, value) {
     const px = x * BLOCK_SIZE;
     const py = y * BLOCK_SIZE;
 
-    ctx.save();
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = color;
     ctx.fillStyle = color;
     ctx.fillRect(px + 1, py + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2);
 
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1.2;
-    ctx.strokeRect(px + 2, py + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4);
-    ctx.restore();
+    ctx.strokeStyle = "rgba(15, 56, 15, 0.5)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(px + 1, py + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2);
 }
 
 function drawMatrix(matrix, offset) {
@@ -157,16 +156,12 @@ function drawNextPiece() {
                 const px = offsetX + x * previewBlockSize;
                 const py = offsetY + y * previewBlockSize;
 
-                nextCtx.save();
-                nextCtx.shadowBlur = 12;
-                nextCtx.shadowColor = COLORS[value];
                 nextCtx.fillStyle = COLORS[value];
                 nextCtx.fillRect(px + 1, py + 1, previewBlockSize - 2, previewBlockSize - 2);
 
-                nextCtx.strokeStyle = "#ffffff";
+                nextCtx.strokeStyle = "rgba(15, 56, 15, 0.5)";
                 nextCtx.lineWidth = 1;
-                nextCtx.strokeRect(px + 2, py + 2, previewBlockSize - 4, previewBlockSize - 4);
-                nextCtx.restore();
+                nextCtx.strokeRect(px + 1, py + 1, previewBlockSize - 2, previewBlockSize - 2);
             }
         });
     });
@@ -176,7 +171,7 @@ function drawBoard() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.save();
-    ctx.strokeStyle = "rgba(0, 247, 255, 0.12)";
+    ctx.strokeStyle = "rgba(15, 56, 15, 0.08)";
     ctx.lineWidth = 1;
 
     for (let x = 0; x <= COLS; x++) {
@@ -310,7 +305,7 @@ function clearLines() {
         lines += cleared;
         score += getLineScore(cleared, level);
         level = Math.floor(lines / 10) + 1;
-        dropInterval = Math.max(100, 400 - (level - 1) * 30);
+        dropInterval = Math.max(100, 500 - (level - 1) * 35);
         updateScore();
     }
 }
@@ -353,7 +348,7 @@ function startGame() {
     lines = 0;
     level = 1;
     nextMatrix = null;
-    dropInterval = 400;
+    dropInterval = 500;
     dropCounter = 0;
     lastTime = 0;
     isGameOver = false;
@@ -429,7 +424,9 @@ function bindTouchButton(button, action) {
         if (isGameOver) return;
 
         const justStarted = ensureGameStarted();
-        if (justStarted) return;
+        if (justStarted && button !== startBtnMobile && button !== restartBtnMobile) {
+            return;
+        }
 
         action();
         drawBoard();
@@ -444,6 +441,9 @@ bindTouchButton(rightBtn, () => playerMove(1));
 bindTouchButton(downBtn, () => playerDrop());
 bindTouchButton(rotateBtn, () => playerRotate());
 bindTouchButton(dropBtn, () => hardDrop());
+bindTouchButton(aBtn, () => playerRotate());
+bindTouchButton(startBtnMobile, () => startGame());
+bindTouchButton(restartBtnMobile, () => startGame());
 
 startBtn.addEventListener("click", startGame);
 restartBtn.addEventListener("click", startGame);
