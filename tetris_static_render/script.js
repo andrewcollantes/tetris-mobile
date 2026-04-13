@@ -1,3 +1,19 @@
+const titleScreen = document.getElementById("titleScreen");
+const gameScreen = document.getElementById("gameScreen");
+const leaderboardScreen = document.getElementById("leaderboardScreen");
+
+const playMenuBtn = document.getElementById("playMenuBtn");
+const leaderboardMenuBtn = document.getElementById("leaderboardMenuBtn");
+const backToMenuBtn = document.getElementById("backToMenuBtn");
+const clearLeaderboardBtn = document.getElementById("clearLeaderboardBtn");
+const leaderboardList = document.getElementById("leaderboardList");
+
+const saveScoreModal = document.getElementById("saveScoreModal");
+const finalScoreText = document.getElementById("finalScoreText");
+const playerNameInput = document.getElementById("playerNameInput");
+const saveScoreBtn = document.getElementById("saveScoreBtn");
+const skipScoreBtn = document.getElementById("skipScoreBtn");
+
 const canvas = document.getElementById("tetris");
 const ctx = canvas.getContext("2d");
 
@@ -7,8 +23,8 @@ const nextCtx = nextCanvas.getContext("2d");
 const scoreEl = document.getElementById("score");
 const linesEl = document.getElementById("lines");
 const levelEl = document.getElementById("level");
-const startBtn = document.getElementById("startBtn");
 const restartBtn = document.getElementById("restartBtn");
+const menuBtn = document.getElementById("menuBtn");
 const gameOverText = document.getElementById("gameOverText");
 
 const leftBtn = document.getElementById("leftBtn");
@@ -17,12 +33,11 @@ const downBtn = document.getElementById("downBtn");
 const rotateBtn = document.getElementById("rotateBtn");
 const dropBtn = document.getElementById("dropBtn");
 const aBtn = document.getElementById("aBtn");
-const startBtnMobile = document.getElementById("startBtnMobile");
-const restartBtnMobile = document.getElementById("restartBtnMobile");
 
 const COLS = 10;
 const ROWS = 20;
 const BLOCK_SIZE = 30;
+const LEADERBOARD_KEY = "mobile_tetris_leaderboard_v1";
 
 canvas.width = COLS * BLOCK_SIZE;
 canvas.height = ROWS * BLOCK_SIZE;
@@ -79,11 +94,19 @@ let lastTime = 0;
 let animationId = null;
 let isGameRunning = false;
 let isGameOver = false;
+let scoreSavedForThisRun = false;
 
 let player = {
     pos: { x: 0, y: 0 },
     matrix: null
 };
+
+function showScreen(screen) {
+    titleScreen.classList.remove("active");
+    gameScreen.classList.remove("active");
+    leaderboardScreen.classList.remove("active");
+    screen.classList.add("active");
+}
 
 function createBoard() {
     return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
@@ -123,7 +146,7 @@ function drawCell(x, y, value) {
     ctx.fillStyle = color;
     ctx.fillRect(px + 1, py + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2);
 
-    ctx.strokeStyle = "rgba(15, 56, 15, 0.5)";
+    ctx.strokeStyle = "rgba(15, 56, 15, 0.45)";
     ctx.lineWidth = 1;
     ctx.strokeRect(px + 1, py + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2);
 }
@@ -143,7 +166,7 @@ function drawNextPiece() {
 
     if (!nextMatrix) return;
 
-    const previewBlockSize = 24;
+    const previewBlockSize = 18;
     const matrixWidth = nextMatrix[0].length;
     const matrixHeight = nextMatrix.length;
 
@@ -159,7 +182,7 @@ function drawNextPiece() {
                 nextCtx.fillStyle = COLORS[value];
                 nextCtx.fillRect(px + 1, py + 1, previewBlockSize - 2, previewBlockSize - 2);
 
-                nextCtx.strokeStyle = "rgba(15, 56, 15, 0.5)";
+                nextCtx.strokeStyle = "rgba(15, 56, 15, 0.45)";
                 nextCtx.lineWidth = 1;
                 nextCtx.strokeRect(px + 1, py + 1, previewBlockSize - 2, previewBlockSize - 2);
             }
@@ -353,18 +376,28 @@ function startGame() {
     lastTime = 0;
     isGameOver = false;
     isGameRunning = true;
+    scoreSavedForThisRun = false;
 
+    saveScoreModal.classList.add("hidden");
     gameOverText.classList.add("hidden");
 
     updateScore();
     resetPlayer();
     drawBoard();
+    showScreen(gameScreen);
 
     if (animationId) {
         cancelAnimationFrame(animationId);
     }
 
     update();
+}
+
+function stopGameLoop() {
+    isGameRunning = false;
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+    }
 }
 
 function gameOver() {
@@ -376,26 +409,75 @@ function gameOver() {
     if (animationId) {
         cancelAnimationFrame(animationId);
     }
+
+    if (!scoreSavedForThisRun && score > 0) {
+        finalScoreText.textContent = score;
+        playerNameInput.value = "";
+        saveScoreModal.classList.remove("hidden");
+    }
 }
 
-function ensureGameStarted() {
-    if (!isGameRunning && !isGameOver) {
-        startGame();
-        return true;
+function getLeaderboard() {
+    try {
+        return JSON.parse(localStorage.getItem(LEADERBOARD_KEY)) || [];
+    } catch {
+        return [];
     }
-    return false;
+}
+
+function saveLeaderboard(data) {
+    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(data));
+}
+
+function addScore(name, scoreValue, linesValue, levelValue) {
+    const trimmedName = name.trim() || "Player";
+    const leaderboard = getLeaderboard();
+
+    leaderboard.push({
+        name: trimmedName,
+        score: scoreValue,
+        lines: linesValue,
+        level: levelValue
+    });
+
+    leaderboard.sort((a, b) => b.score - a.score);
+    saveLeaderboard(leaderboard.slice(0, 10));
+}
+
+function renderLeaderboard() {
+    const leaderboard = getLeaderboard();
+
+    if (leaderboard.length === 0) {
+        leaderboardList.innerHTML = `<div class="empty-board">No scores yet.</div>`;
+        return;
+    }
+
+    leaderboardList.innerHTML = leaderboard
+        .map((entry, index) => `
+            <div class="leaderboard-item">
+                <div class="rank-name">
+                    <span class="rank">#${index + 1}</span>
+                    <span class="player-name">${escapeHtml(entry.name)}</span>
+                </div>
+                <span class="score-value">${entry.score}</span>
+            </div>
+        `)
+        .join("");
+}
+
+function escapeHtml(str) {
+    return str
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
 document.addEventListener("keydown", event => {
-    const key = event.key.toLowerCase();
-    const controlKeys = ["a", "d", "s", "w", "arrowleft", "arrowright", "arrowdown", "arrowup"];
+    if (!gameScreen.classList.contains("active")) return;
 
-    if (!isGameRunning) {
-        if (controlKeys.includes(key) || event.code === "Space") {
-            startGame();
-            return;
-        }
-    }
+    const key = event.key.toLowerCase();
 
     if (isGameOver) return;
 
@@ -420,13 +502,8 @@ function bindTouchButton(button, action) {
 
     const handler = (e) => {
         e.preventDefault();
-
+        if (!gameScreen.classList.contains("active")) return;
         if (isGameOver) return;
-
-        const justStarted = ensureGameStarted();
-        if (justStarted && button !== startBtnMobile && button !== restartBtnMobile) {
-            return;
-        }
 
         action();
         drawBoard();
@@ -442,13 +519,49 @@ bindTouchButton(downBtn, () => playerDrop());
 bindTouchButton(rotateBtn, () => playerRotate());
 bindTouchButton(dropBtn, () => hardDrop());
 bindTouchButton(aBtn, () => playerRotate());
-bindTouchButton(startBtnMobile, () => startGame());
-bindTouchButton(restartBtnMobile, () => startGame());
 
-startBtn.addEventListener("click", startGame);
+playMenuBtn.addEventListener("click", startGame);
+
+leaderboardMenuBtn.addEventListener("click", () => {
+    stopGameLoop();
+    renderLeaderboard();
+    showScreen(leaderboardScreen);
+});
+
+backToMenuBtn.addEventListener("click", () => {
+    showScreen(titleScreen);
+});
+
+menuBtn.addEventListener("click", () => {
+    stopGameLoop();
+    showScreen(titleScreen);
+});
+
 restartBtn.addEventListener("click", startGame);
+
+clearLeaderboardBtn.addEventListener("click", () => {
+    localStorage.removeItem(LEADERBOARD_KEY);
+    renderLeaderboard();
+});
+
+saveScoreBtn.addEventListener("click", () => {
+    addScore(playerNameInput.value, score, lines, level);
+    scoreSavedForThisRun = true;
+    saveScoreModal.classList.add("hidden");
+    renderLeaderboard();
+    showScreen(leaderboardScreen);
+});
+
+skipScoreBtn.addEventListener("click", () => {
+    scoreSavedForThisRun = true;
+    saveScoreModal.classList.add("hidden");
+    renderLeaderboard();
+    showScreen(leaderboardScreen);
+});
 
 board = createBoard();
 drawBoard();
-updateScore();
 drawNextPiece();
+updateScore();
+renderLeaderboard();
+showScreen(titleScreen);
