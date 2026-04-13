@@ -50,21 +50,25 @@
             <div class="right-panel">
                 <canvas id="tetris"></canvas>
                 <div id="gameOverText" class="game-over hidden">GAME OVER</div>
-
-                <div class="mobile-controls">
-                    <div class="mobile-row">
-                        <button class="control-btn" id="rotateBtn">Rotate</button>
-                        <button class="control-btn" id="dropBtn">Drop</button>
+                
+                <div class="mobile-controls gameboy-controls">
+                    <div class="dpad">
+                        <button class="dpad-btn dpad-up" id="rotateBtn">▲</button>
+                        <button class="dpad-btn dpad-left" id="leftBtn">◀</button>
+                        <button class="dpad-btn dpad-center" disabled>•</button>
+                        <button class="dpad-btn dpad-right" id="rightBtn">▶</button>
+                        <button class="dpad-btn dpad-down" id="downBtn">▼</button>
                     </div>
-                    <div class="mobile-row">
-                        <button class="control-btn" id="leftBtn">◀</button>
-                        <button class="control-btn" id="downBtn">▼</button>
-                        <button class="control-btn" id="rightBtn">▶</button>
+                    
+                    <div class="ab-buttons">
+                        <button class="ab-btn btn-b" id="dropBtn">B</button>
+                        <button class="ab-btn btn-a" id="startBtnMobile">A</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
     <script src="script.js"></script>
 </body>
